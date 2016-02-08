@@ -57,9 +57,11 @@ void delay(int seconds)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-D3DProcessor::D3DProcessor(QObject* parent) :
-QObject(parent),
-m_Stop(false)
+D3DProcessor::D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, QObject* parent) :
+  QObject(parent),
+  m_PipelineFilePath(pipelineFilePath),
+  m_PipelineRunnerFilePath(pipelineRunnerFilePath),
+  m_Stop(false)
 {
 
 }
@@ -77,6 +79,8 @@ D3DProcessor::~D3DProcessor()
 // -----------------------------------------------------------------------------
 void D3DProcessor::run()
 {
+
+
   PreviewTableModel* model = PreviewTableModel::Instance();
 
   // Now run the chosen pipeline on each image file in the table

@@ -43,7 +43,7 @@ class D3DProcessor : public QObject
     Q_OBJECT
 
   public:
-    D3DProcessor(QObject* parent = NULL);
+    D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, QObject* parent = NULL);
     virtual ~D3DProcessor();
 
     void setStop(bool val);
@@ -58,6 +58,9 @@ class D3DProcessor : public QObject
     void processGeneratedProgressValue(double value);
 
   private:
+    QString                                   m_PipelineFilePath;
+    QString                                   m_PipelineRunnerFilePath;
+
     bool                                      m_Stop;
 
     D3DProcessor(const D3DProcessor&);    // Copy Constructor Not Implemented

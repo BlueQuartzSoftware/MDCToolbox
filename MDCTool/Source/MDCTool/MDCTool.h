@@ -41,6 +41,8 @@
 #include <QtWidgets/QWizard>
 #include <QtWidgets/QWidget>
 
+#include <QtCore/QJsonObject>
+
 class MDCConfiguration;
 
 class MDCTool : public QWizard
@@ -54,6 +56,8 @@ class MDCTool : public QWizard
     static QString ChooseFile(QString &lastFilePath, const QString &filter = QString());
 
     static QString TokenizeConfiguration(MDCConfiguration* config, char token = ';');
+
+    static QJsonObject ReadJsonFile(const QString &filePath, int &errorCode);
 
     QVector<QSharedPointer<MDCConfiguration> > readJsonConfigurationFile(const QString &filePath);
 

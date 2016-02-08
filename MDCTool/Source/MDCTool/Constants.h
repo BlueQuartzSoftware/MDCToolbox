@@ -33,29 +33,31 @@
 *
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+#ifndef _MDCTool_CONSTANTS_H_
+#define _MDCTool_CONSTANTS_H_
 
-#include <QApplication>
-
-#include "MDCTool.h"
-
-#include "SIMPLib/Common/FilterManager.h"
-#include "SIMPLib/Plugin/SIMPLibPluginLoader.h"
-
-int main(int argc, char* argv[])
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+namespace MDCToolSpace
 {
-  QCoreApplication::setApplicationName("MDCTool");
-  QCoreApplication::setOrganizationDomain("bluequartz.net");
-  QCoreApplication::setOrganizationName("BlueQuartz Software");
-  QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+  namespace FieldNames
+  {
+    const QString PipelineFilePath = "pipelineFilePath";
+    const QString PipelineRunnerFilePath = "pipelineRunnerFilePath";
+    const QString ConfigFilePath = "configFilePath";
+  }
 
-  QApplication app(argc, argv);
-
-  // Register all the filters including trying to load those from Plugins
-  FilterManager* fm = FilterManager::Instance();
-  SIMPLibPluginLoader::LoadPluginFilters(fm);
-
-  MDCTool* tool = new MDCTool;
-  tool->show();
-
-  return app.exec();
+  namespace ReplacementMonikers
+  {
+    const QString EndIndex("@End_Index@");
+    const QString StartIndex("@Start_Index@");
+    const QString PaddingDigits("@Padding_Digits@");
+    const QString InputPath("@Input_Path@");
+    const QString FilePrefix("@File_Prefix@");
+    const QString FileSuffix("@File_Suffix@");
+    const QString FileExtension("@File_Extension@");
+  }
 }
+
+#endif /* _MDCTool_CONSTANTS_H_ */

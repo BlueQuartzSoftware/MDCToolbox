@@ -160,9 +160,9 @@ QString MDCTool::TokenizeConfiguration(MDCConfiguration* config, char token)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QVector<QSharedPointer<MDCConfiguration> > MDCTool::readJsonConfigurationFile(const QString &filePath)
+QJsonObject MDCTool::ReadJsonFile(const QString &filePath, int &errorCode)
 {
-  m_Configurations.clear();
+  QJsonObject obj;
 
   QFile inputFile(filePath);
   if (inputFile.open(QIODevice::ReadOnly))
@@ -172,32 +172,52 @@ QVector<QSharedPointer<MDCConfiguration> > MDCTool::readJsonConfigurationFile(co
     QJsonDocument doc = QJsonDocument::fromJson(byteArray, &parseError);
     if (parseError.error != QJsonParseError::NoError)
     {
-      QString s = "The configuration file that was chosen does not conform to universal JSON standards.\n\n";
-      s.append("Please choose a new JSON file that conforms to the universal JSON standard.");
+      errorCode = -1;
+      return obj;
+    }
+
+    obj = doc.object();
+  }
+
+  return obj;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QVector<QSharedPointer<MDCConfiguration> > MDCTool::readJsonConfigurationFile(const QString &filePath)
+{
+  m_Configurations.clear();
+
+  int error = 0;
+  QJsonObject root = ReadJsonFile(filePath, error);
+
+  if (error < 0)
+  {
+    QString s = "The configuration file that was chosen does not conform to universal JSON standards.\n\n";
+    s.append("Please choose a new JSON file that conforms to the universal JSON standard.");
+    QMessageBox::critical(NULL, "MDCTool Error", s, QMessageBox::Ok);
+    return QVector<QSharedPointer<MDCConfiguration> >();
+  }
+
+  for (int i = 0; i < root.count(); i++)
+  {
+    QJsonObject configObj = root.value(QString::number(i)).toObject();
+    if (configObj.isEmpty())
+    {
+      QString s = "The configuration file that was chosen contains at least one unrecognizable configuration name.\n\n";
+      s.append("Please choose a new JSON file that conforms to the MDCTool standard for configuration files.");
       QMessageBox::critical(this, "MDCTool Error", s, QMessageBox::Ok);
       return QVector<QSharedPointer<MDCConfiguration> >();
     }
 
-    QJsonObject root = doc.object();
-    for (int i = 0; i < root.count(); i++)
+    QSharedPointer<MDCConfiguration> config = QSharedPointer<MDCConfiguration>(new MDCConfiguration());
+    for (QJsonObject::iterator iter = configObj.begin(); iter != configObj.end(); iter++)
     {
-      QJsonObject configObj = root.value(QString::number(i)).toObject();
-      if (configObj.isEmpty())
-      {
-        QString s = "The configuration file that was chosen contains at least one unrecognizable configuration name.\n\n";
-        s.append("Please choose a new JSON file that conforms to the MDCTool standard for configuration files.");
-        QMessageBox::critical(this, "MDCTool Error", s, QMessageBox::Ok);
-        return QVector<QSharedPointer<MDCConfiguration> >();
-      }
-
-      QSharedPointer<MDCConfiguration> config = QSharedPointer<MDCConfiguration>(new MDCConfiguration());
-      for (QJsonObject::iterator iter = configObj.begin(); iter != configObj.end(); iter++)
-      {
-        config->addCondition(iter.key(), iter.value().toDouble());
-      }
-
-      m_Configurations.push_back(config);
+      config->addCondition(iter.key(), iter.value().toDouble());
     }
+
+    m_Configurations.push_back(config);
   }
 
   if (m_Configurations.size() <= 0)

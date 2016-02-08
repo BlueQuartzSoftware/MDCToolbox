@@ -204,7 +204,7 @@ include_directories(${PROJECT_BINARY_DIR})
 
 #-------------------------------------------------------------------------------
 #
-add_subdirectory( ${MDCToolProj_SOURCE_DIR}/Source/Applications/MDCTool ${PROJECT_BINARY_DIR}/Applications/MDCTool)
+add_subdirectory( ${MDCToolProj_SOURCE_DIR}/Source/MDCTool ${PROJECT_BINARY_DIR}/MDCTool)
 
 
 # This should be the last line in this file:

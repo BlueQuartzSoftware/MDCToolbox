@@ -45,6 +45,7 @@
 
 #include "D3DProcessor.h"
 #include "PreviewTableModel.h"
+#include "Constants.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -115,7 +116,9 @@ void D3DProcessingPage::on_startBtn_pressed()
   }
   m_WorkerThread = new QThread(); // Create a new Thread Resource
 
-  m_Processor = QSharedPointer<D3DProcessor>(new D3DProcessor());
+  QString pipelineFilePath = field(MDCToolSpace::FieldNames::PipelineFilePath).toString();
+  QString pipelineRunnerFilePath = field(MDCToolSpace::FieldNames::PipelineRunnerFilePath).toString();
+  m_Processor = QSharedPointer<D3DProcessor>(new D3DProcessor(pipelineFilePath, pipelineRunnerFilePath));
 
   // When the thread starts its event loop, start the PipelineBuilder going
   connect(m_WorkerThread, SIGNAL(started()),
@@ -218,6 +221,8 @@ bool D3DProcessingPage::isComplete() const
       return false;
     }
   }
+
+  executionStatus->clear();
 
   return true;
 }

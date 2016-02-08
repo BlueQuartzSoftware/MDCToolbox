@@ -37,6 +37,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QJsonDocument>
 
 #include <QtWidgets/QMessageBox>
 
@@ -45,6 +46,7 @@
 #include "InputDataPage.h"
 #include "D3DProcessingPage.h"
 #include "PreviewTableModel.h"
+#include "Constants.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -71,7 +73,9 @@ D3DInfoPage::~D3DInfoPage()
 // -----------------------------------------------------------------------------
 void D3DInfoPage::setupGui()
 {
-  
+  registerField(MDCToolSpace::FieldNames::PipelineFilePath, pipelineLineEdit);
+  registerField(MDCToolSpace::FieldNames::PipelineRunnerFilePath, pipelineRunnerLineEdit);
+  registerField(MDCToolSpace::FieldNames::ConfigFilePath, configLineEdit);
 }
 
 // -----------------------------------------------------------------------------
@@ -88,7 +92,6 @@ void D3DInfoPage::showEvent(QShowEvent* event)
   {
     int id = ids[i];
 
-    QWizardPage* page = wizard()->page(id);
     wizard()->removePage(id);
   }
 }
@@ -169,6 +172,10 @@ bool D3DInfoPage::validatePage()
   MDCTool* tool = static_cast<MDCTool*>(wizard());
   if (NULL == tool) { return false; }
 
+  QString standardsError = "The pipeline file that was chosen does not conform to MDCTool standards.\n\n";
+  standardsError.append("Please choose a new pipeline that conforms to the MDCTool standard.");
+
+  // Check that the configuration file is a JSON file
   QString configPath = configLineEdit->text();
   QFileInfo configFi(configPath);
   if (configFi.completeSuffix() != "json")
@@ -179,14 +186,118 @@ bool D3DInfoPage::validatePage()
     return false;
   }
 
+  // Check that the chosen pipeline file is a JSON file
+  QString pipelinePath = pipelineLineEdit->text();
+  QFileInfo pipelineFi(pipelinePath);
+  if (pipelineFi.completeSuffix() != "json")
+  {
+    QString s = "The pipeline file that was chosen is not a JSON file.\n\n";
+    s.append("Please choose a JSON file.");
+    QMessageBox::critical(this, "MDCTool Error", s, QMessageBox::Ok);
+    return false;
+  }
+
+  // Validate the chosen pipeline file
+  int errorCode = 0;
+  QJsonObject obj = MDCTool::ReadJsonFile(pipelinePath, errorCode);
+  if (errorCode < 0)
+  {
+    QString s = "MDCTool was unable to read the pipeline file that was chosen.\n\n";
+    s.append("Please choose a new pipeline file.");
+    QMessageBox::critical(NULL, "MDCTool Error", s, QMessageBox::Ok);
+    return false;
+  }
+
+  QJsonObject firstFilterObj = obj["0"].toObject();
+  if (firstFilterObj.isEmpty() == true)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString filterName = firstFilterObj["Filter_Name"].toString();
+  if (filterName.isEmpty() == true)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  if (filterName != "ImportImageStack")
+  {
+    QString s = "The pipeline file that was chosen does not begin with \"Import Images (3D Stack)\" filter.\n\n";
+    s.append("Please choose a new pipeline file that begins with this filter.");
+    QMessageBox::critical(this, "MDCTool Error", s, QMessageBox::Ok);
+    return false;
+  }
+
+  QJsonObject fileListInfoObj = firstFilterObj["InputFileListInfo"].toObject();
+  if (fileListInfoObj.isEmpty() == true)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString endIndex = fileListInfoObj["EndIndex"].toString();
+  if (endIndex != MDCToolSpace::ReplacementMonikers::EndIndex)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString startIndex = fileListInfoObj["StartIndex"].toString();
+  if (startIndex != MDCToolSpace::ReplacementMonikers::StartIndex)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString fileExt = fileListInfoObj["FileExtension"].toString();
+  if (fileExt != MDCToolSpace::ReplacementMonikers::FileExtension)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString filePrefix = fileListInfoObj["FilePrefix"].toString();
+  if (filePrefix != MDCToolSpace::ReplacementMonikers::FilePrefix)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString fileSuffix = fileListInfoObj["FileSuffix"].toString();
+  if (fileSuffix != MDCToolSpace::ReplacementMonikers::FileSuffix)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString paddingDigits = fileListInfoObj["PaddingDigits"].toString();
+  if (paddingDigits != MDCToolSpace::ReplacementMonikers::PaddingDigits)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QString inputPath = fileListInfoObj["InputPath"].toString();
+  if (inputPath != MDCToolSpace::ReplacementMonikers::InputPath)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  // Read in the configurations
   QVector<QSharedPointer<MDCConfiguration> > configs = tool->readJsonConfigurationFile(configPath);
   if (configs.size() <= 0)
   {
     return false;
   }
 
-  wizard()->removePage(1);    // Remove the placeholder page
+  /* Remove the placeholder page that we only used to make sure that the wizard's
+     Next/Finish button read "Next" and not "Finish" */
+  wizard()->removePage(1);
 
+  // Add in the gather and input pages for each configuration
   int pageId = 1;
   for (int i = 0; i < configs.size(); i++)
   {
@@ -202,6 +313,7 @@ bool D3DInfoPage::validatePage()
     pageId++;
   }
 
+  // Add the processing page (this is where we run the chosen pipeline with each image file)
   D3DProcessingPage* d3dProcessingPage = new D3DProcessingPage(wizard());
   wizard()->setPage(pageId, d3dProcessingPage);
 
