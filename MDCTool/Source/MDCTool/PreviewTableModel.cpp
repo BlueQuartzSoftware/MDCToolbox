@@ -146,10 +146,10 @@ PreviewTableItem* PreviewTableModel::getItem(const QModelIndex& index) const
 {
   if (index.isValid())
   {
-    PreviewTableItem* item = m_TableItems[index.row()];
+    QSharedPointer<PreviewTableItem> item = m_TableItems[index.row()];
     if (item)
     {
-      return item;
+      return item.data();
     }
   }
   return NULL;
@@ -223,7 +223,7 @@ bool PreviewTableModel::insertRows(int position, int rows, const QModelIndex& pa
 {
   Q_UNUSED(parent)
   beginInsertRows(QModelIndex(), position, position + rows - 1);
-  m_TableItems.insert(position, rows, new PreviewTableItem(QVector<QVariant>(m_HorizontalHeaders.size(), "")));
+  m_TableItems.insert(position, rows, QSharedPointer<PreviewTableItem>(new PreviewTableItem(QVector<QVariant>(m_HorizontalHeaders.size(), ""))));
   endInsertRows();
   return true;
 }
@@ -301,6 +301,102 @@ bool PreviewTableModel::setData(const QModelIndex& index, const QVariant& value,
   }
 
   return result;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+int PreviewTableModel::getFileIndex(int row)
+{
+  return m_TableItems[row]->getFileIndex();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PreviewTableModel::setFileIndex(int row, int num)
+{
+  m_TableItems[row]->setFileIndex(num);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+int PreviewTableModel::getPaddingDigits(int row)
+{
+  return m_TableItems[row]->getPaddingDigits();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PreviewTableModel::setPaddingDigits(int row, int num)
+{
+  m_TableItems[row]->setPaddingDigits(num);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString PreviewTableModel::getInputDirectory(int row)
+{
+  return m_TableItems[row]->getInputDirectory();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PreviewTableModel::setInputDirectory(int row, QString str)
+{
+  m_TableItems[row]->setInputDirectory(str);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString PreviewTableModel::getFilePrefix(int row)
+{
+  return m_TableItems[row]->getFilePrefix();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PreviewTableModel::setFilePrefix(int row, QString str)
+{
+  m_TableItems[row]->setFilePrefix(str);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString PreviewTableModel::getFileSuffix(int row)
+{
+  return m_TableItems[row]->getFileSuffix();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PreviewTableModel::setFileSuffix(int row, QString str)
+{
+  m_TableItems[row]->setFileSuffix(str);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString PreviewTableModel::getFileExtension(int row)
+{
+  return m_TableItems[row]->getFileExtension();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void PreviewTableModel::setFileExtension(int row, QString str)
+{
+  m_TableItems[row]->setFileExtension(str);
 }
 
 // -----------------------------------------------------------------------------

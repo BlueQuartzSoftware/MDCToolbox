@@ -57,6 +57,7 @@ namespace MDCToolSpace
     const QString FilePrefix("@File_Prefix@");
     const QString FileSuffix("@File_Suffix@");
     const QString FileExtension("@File_Extension@");
+    const QString OutputFile("@Output_File@");
   }
 }
 

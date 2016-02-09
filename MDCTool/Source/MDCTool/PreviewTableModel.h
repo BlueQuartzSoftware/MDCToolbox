@@ -86,6 +86,24 @@ public:
 
   bool setData(const QModelIndex& index, const QVariant& value, int role);
 
+  int getFileIndex(int row);
+  void setFileIndex(int row, int num);
+
+  int getPaddingDigits(int row);
+  void setPaddingDigits(int row, int num);
+
+  QString getInputDirectory(int row);
+  void setInputDirectory(int row, QString str);
+
+  QString getFilePrefix(int row);
+  void setFilePrefix(int row, QString str);
+
+  QString getFileSuffix(int row);
+  void setFileSuffix(int row, QString str);
+
+  QString getFileExtension(int row);
+  void setFileExtension(int row, QString str);
+
   QMovie* getLoadingGif();
 
   QModelIndex getIndexInProgress();
@@ -96,7 +114,7 @@ protected:
 private:
   static PreviewTableModel*                             self;
 
-  QVector<PreviewTableItem*>                            m_TableItems;
+  QVector<QSharedPointer<PreviewTableItem> >            m_TableItems;
 
   QVector<QString>                                      m_HorizontalHeaders;
 

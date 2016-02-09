@@ -46,6 +46,8 @@
 
 #include <QtWidgets/QLineEdit>
 
+#include "FilePathGenerator.h"
+
 #include "ui_ImportFilesWidget.h"
 
 /**
@@ -64,6 +66,7 @@ class ImportFilesWidget : public QWidget, private Ui::ImportFilesWidget
     Q_OBJECT
 
   public:
+
     /**
     * @brief Constructor
     * @param parameter The FilterParameter object that this widget represents
@@ -79,7 +82,7 @@ class ImportFilesWidget : public QWidget, private Ui::ImportFilesWidget
      */
     virtual void setupGui();
 
-    QVector<QString> getFileList();
+    QVector<FilePathGenerator::FilePackage> getFileList();
 
   protected slots:
     /* OIM Data Import Slots */
@@ -126,9 +129,9 @@ class ImportFilesWidget : public QWidget, private Ui::ImportFilesWidget
     void fileListChanged();
 
   private:
-    QVector<QString>                    m_FileList;
+    QVector<FilePathGenerator::FilePackage>               m_PackageList;
 
-    static QString                      m_OpenDialogLastDirectory;
+    static QString                                        m_OpenDialogLastDirectory;
 
     ImportFilesWidget(const ImportFilesWidget&); // Copy Constructor Not Implemented
     void operator=(const ImportFilesWidget&); // Operator '=' Not Implemented

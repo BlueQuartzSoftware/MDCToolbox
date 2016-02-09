@@ -215,17 +215,11 @@ bool D3DInfoPage::validatePage()
     return false;
   }
 
-  QString filterName = firstFilterObj["Filter_Name"].toString();
-  if (filterName.isEmpty() == true)
-  {
-    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
-    return false;
-  }
-
-  if (filterName != "ImportImageStack")
+  QString firstFilterName = firstFilterObj["Filter_Name"].toString();
+  if (firstFilterName != "ImportImageStack")
   {
     QString s = "The pipeline file that was chosen does not begin with \"Import Images (3D Stack)\" filter.\n\n";
-    s.append("Please choose a new pipeline file that begins with this filter.");
+    s.append("Please choose a new pipeline file that begins with \"Import Images (3D Stack)\".");
     QMessageBox::critical(this, "MDCTool Error", s, QMessageBox::Ok);
     return false;
   }
@@ -281,6 +275,32 @@ bool D3DInfoPage::validatePage()
 
   QString inputPath = fileListInfoObj["InputPath"].toString();
   if (inputPath != MDCToolSpace::ReplacementMonikers::InputPath)
+  {
+    QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
+    return false;
+  }
+
+  QJsonObject::iterator iter = obj.end();
+  --iter;
+
+  if (iter.key() == "PipelineBuilder")
+  {
+    --iter;
+  }
+
+  QJsonObject lastFilterObj = iter.value().toObject();
+  QString lastFilterName = lastFilterObj["Filter_Name"].toString();
+
+  if (lastFilterName != "DataContainerWriter")
+  {
+    QString s = "The pipeline file that was chosen does not end with \"Write DREAM.3D Data File\" filter.\n\n";
+    s.append("Please choose a new pipeline file that ends with \"Write DREAM.3D Data File\".");
+    QMessageBox::critical(this, "MDCTool Error", s, QMessageBox::Ok);
+    return false;
+  }
+
+  QString outputFile = lastFilterObj["OutputFile"].toString();
+  if (outputFile != MDCToolSpace::ReplacementMonikers::OutputFile)
   {
     QMessageBox::critical(NULL, "MDCTool Error", standardsError, QMessageBox::Ok);
     return false;

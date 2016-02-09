@@ -56,31 +56,42 @@ FilePathGenerator::~FilePathGenerator()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QVector<QString> FilePathGenerator::GenerateFileList(int start, int end, bool& hasMissingFiles,
+QVector<FilePathGenerator::FilePackage> FilePathGenerator::GenerateFileList(int start, int end, bool& hasMissingFiles,
                                                      const QString& inputPath, const QString& filePrefix,
                                                      const QString& fileSuffix, const QString& fileExtension,
                                                      int paddingDigits)
-{
-  QVector<QString> fileList;
+{ 
+  QVector<FilePackage> packageList;
   QDir dir(inputPath);
   if(dir.exists() == false)
   {
-    return fileList;
+    return packageList;
   }
   int index = 0;
 
   QString filename;
   for (int i = 0; i < (end - start) + 1; ++i)
   {
+    FilePackage package;
+
     index = start + i;
     filename = QString("%1%2%3.%4").arg(filePrefix)
                .arg(QString::number(index), paddingDigits, '0')
                .arg(fileSuffix).arg(fileExtension);
     QString filePath = inputPath + QDir::separator() + filename;
     filePath = QDir::toNativeSeparators(filePath);
-    fileList.push_back(filePath);
+    package.completeFilePath = filePath;
+
+    package.fileExtension = fileExtension;
+    package.filePrefix = filePrefix;
+    package.fileSuffix = fileSuffix;
+    package.index = index;
+    package.inputPath = inputPath;
+    package.paddingDigits = paddingDigits;
+
+    packageList.push_back(package);
   }
-  return fileList;
+  return packageList;
 }
 
 

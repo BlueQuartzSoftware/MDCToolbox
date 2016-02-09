@@ -39,8 +39,14 @@
 //
 // -----------------------------------------------------------------------------
 PreviewTableItem::PreviewTableItem(const QVector<QVariant>& data) :
-m_ItemData(data),
-m_PipelineState(NotRunning)
+  m_ItemData(data),
+  m_PipelineState(NotRunning),
+  m_FileIndex(-1),
+  m_PaddingDigits(-1),
+  m_InputDir(""),
+  m_FilePrefix(""),
+  m_FileSuffix(""),
+  m_FileExtension("")
 {
 
 }

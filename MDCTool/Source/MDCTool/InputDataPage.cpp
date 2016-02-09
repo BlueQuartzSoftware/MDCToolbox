@@ -127,15 +127,18 @@ bool InputDataPage::validatePage()
 {
   PreviewTableModel* model = PreviewTableModel::Instance();
 
-  QVector<QString> fileList = importFilesWidget->getFileList();
-  for (int i = 0; i < fileList.size(); i++)
+  QVector<FilePathGenerator::FilePackage> packageList = importFilesWidget->getFileList();
+  for (int i = 0; i < packageList.size(); i++)
   {
-    QString filePath = fileList[i];
+    FilePathGenerator::FilePackage package = packageList.at(i);
+    QString filePath = package.completeFilePath;
 
     int row = model->rowCount();
     model->insertRow(row);
     model->setData(model->index(row, PreviewTableModel::Conditions), m_CondensedConfigText, Qt::DisplayRole);
     model->setData(model->index(row, PreviewTableModel::RawImagePath), filePath, Qt::DisplayRole);
+
+
   }
 
   // Return true, because we are only using this reimplemented function to do tasks between pages.

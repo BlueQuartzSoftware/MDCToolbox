@@ -45,6 +45,17 @@ class FilePathGenerator
 
     virtual ~FilePathGenerator();
 
+  struct FilePackage
+  {
+    QString completeFilePath;
+    int index;
+    QString inputPath;
+    QString filePrefix;
+    QString fileSuffix;
+    QString fileExtension;
+    int paddingDigits;
+  };
+
     /**
      * @brief generateFileList This method will generate a file list in the correct order of the files that should
      * be imported into an h5ebsd file
@@ -55,7 +66,7 @@ class FilePathGenerator
      * @param filename Example File Name
      * @return
      */
-    static QVector<QString> GenerateFileList(int start, int end, bool& hasMissingFiles,
+    static QVector<FilePackage> GenerateFileList(int start, int end, bool& hasMissingFiles,
                                              const QString& inputPath, const QString& filePrefix,
                                              const QString& fileSuffix, const QString& fileExtension,
                                              int paddingDigits);

@@ -50,7 +50,6 @@
 #include <QtWidgets/QListWidgetItem>
 #include <QtWidgets/QButtonGroup>
 
-#include "FilePathGenerator.h"
 #include "MDCToolStyles.h"
 #include "QFileCompleter.h"
 
@@ -161,7 +160,7 @@ void ImportFilesWidget::on_m_InputDir_textChanged(const QString& text)
   else
   {
     m_FileListView->clear();
-    m_FileList.clear();
+    m_PackageList.clear();
     emit fileListChanged();
   }
 }
@@ -219,7 +218,7 @@ void ImportFilesWidget::on_m_FilePrefix_textChanged(const QString& string)
 // -----------------------------------------------------------------------------
 void ImportFilesWidget::generateExampleEbsdInputFile()
 {
-  m_FileList.clear();
+  m_PackageList.clear();
 
   QString filename = QString("%1%2%3.%4").arg(m_FilePrefix->text())
                      .arg(m_ZStartIndex->text(), m_TotalDigits->value(), '0')
@@ -231,7 +230,7 @@ void ImportFilesWidget::generateExampleEbsdInputFile()
   bool hasMissingFiles = false;
 
   // Now generate all the file names the user is asking for and populate the table
-  QVector<QString> fileList = FilePathGenerator::GenerateFileList(start, end, hasMissingFiles,
+  QVector<FilePathGenerator::FilePackage> packageList = FilePathGenerator::GenerateFileList(start, end, hasMissingFiles,
                               m_InputDir->text(),
                               m_FilePrefix->text(),
                               m_FileSuffix->text(),
@@ -242,14 +241,15 @@ void ImportFilesWidget::generateExampleEbsdInputFile()
   QIcon redDot = QIcon(QString(":/bullet_ball_red.png"));
 
   int validFileCount = 0;
-  for (QVector<QString>::size_type i = 0; i < fileList.size(); ++i)
+  for (QVector<FilePathGenerator::FilePackage>::size_type i = 0; i < packageList.size(); ++i)
   {
-    QString filePath(fileList.at(i));
+    FilePathGenerator::FilePackage package = packageList.at(i);
+    QString filePath(package.completeFilePath);
     QFileInfo fi(filePath);
     QListWidgetItem* item = new QListWidgetItem( filePath, m_FileListView);
     if (fi.exists() == true)
     {
-      m_FileList.push_back(filePath);
+      m_PackageList.push_back(package);
       item->setIcon(greenDot);
       validFileCount++;
     }
@@ -263,7 +263,7 @@ void ImportFilesWidget::generateExampleEbsdInputFile()
   if (hasMissingFiles == true)
   {
     m_ErrorMessage->setVisible(true);
-    m_ErrorMessage->setText("Alert: " + QString::number(validFileCount) + " of " + QString::number(fileList.size()) + " files exist.");
+    m_ErrorMessage->setText("Alert: " + QString::number(validFileCount) + " of " + QString::number(packageList.size()) + " files exist.");
     MDCToolStyles::LabelRedErrorStyle(m_ErrorMessage);
   }
   else
@@ -469,8 +469,8 @@ void ImportFilesWidget::findEbsdMaxSliceAndPrefix()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QVector<QString> ImportFilesWidget::getFileList()
+QVector<FilePathGenerator::FilePackage> ImportFilesWidget::getFileList()
 {
-  return m_FileList;
+  return m_PackageList;
 }
 

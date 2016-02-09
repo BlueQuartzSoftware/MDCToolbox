@@ -132,7 +132,7 @@ void D3DProcessingPage::on_startBtn_pressed()
   connect(m_WorkerThread, SIGNAL(finished()),
     this, SLOT(processDidFinish()));
 
-  // If the use clicks on the "Stop" button send a message to the processor object
+  // If the user clicks on the "Stop" button send a message to the processor object
   connect(this, SIGNAL(processStopped()),
     m_Processor.data(), SLOT(stopProcess()), Qt::DirectConnection);
 

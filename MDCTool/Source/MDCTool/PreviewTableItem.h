@@ -62,9 +62,35 @@ public:
   PipelineState getPipelineState();
   void setPipelineState(PipelineState state);
 
+  int getFileIndex();
+  void setFileIndex(int num);
+
+  int getPaddingDigits();
+  void setPaddingDigits(int num);
+
+  QString getInputDirectory();
+  void setInputDirectory(QString str);
+
+  QString getFilePrefix();
+  void setFilePrefix(QString str);
+
+  QString getFileSuffix();
+  void setFileSuffix(QString str);
+
+  QString getFileExtension();
+  void setFileExtension(QString str);
+
 private:
   QVector<QVariant>                                             m_ItemData;
   PipelineState                                                 m_PipelineState;
+
+  // ImportFilesWidget Information
+  int                                                           m_FileIndex;
+  int                                                           m_PaddingDigits;
+  QString                                                       m_InputDir;
+  QString                                                       m_FilePrefix;
+  QString                                                       m_FileSuffix;
+  QString                                                       m_FileExtension;
 
   PreviewTableItem(const PreviewTableItem&);    // Copy Constructor Not Implemented
   void operator=(const PreviewTableItem&);  // Operator '=' Not Implemented
