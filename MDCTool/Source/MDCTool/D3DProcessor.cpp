@@ -128,15 +128,18 @@ void D3DProcessor::run()
 
       QJsonDocument doc(obj);
 
-      QFile outputFile("C:/Users/jkleingers/Desktop/jsonTest.json");
-      if (outputFile.open(QIODevice::WriteOnly))
+      QString tempPipelinePath = m_PipelineFilePath + ".temp";
+      QFile tempPipelineFile(tempPipelinePath);
+      if (tempPipelineFile.open(QIODevice::WriteOnly))
       {
-        outputFile.write(doc.toJson());
-        outputFile.close();
+        tempPipelineFile.write(doc.toJson());
+        tempPipelineFile.close();
       }
 
       // Run the pipeline
       delay(3);
+
+      tempPipelineFile.remove();
     }
 
     model->setPipelineState(index.row(), PreviewTableItem::DoneNoError);
