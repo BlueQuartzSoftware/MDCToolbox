@@ -122,6 +122,10 @@ void D3DProcessor::run()
       inputFileListObj["InputPath"] = model->getInputDirectory(i);
       inputFileListObj["PaddingDigits"] = model->getPaddingDigits(i);
 
+      // We have to copy these back into the original object, because there is no support for QJsonObject references yet.
+      firstFilterObj["InputFileListInfo"] = inputFileListObj;
+      obj["0"] = firstFilterObj;
+
       QJsonDocument doc(obj);
 
       QFile outputFile("C:/Users/jkleingers/Desktop/jsonTest.json");

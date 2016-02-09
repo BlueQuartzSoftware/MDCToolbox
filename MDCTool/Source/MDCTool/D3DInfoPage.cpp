@@ -101,7 +101,7 @@ void D3DInfoPage::showEvent(QShowEvent* event)
 // -----------------------------------------------------------------------------
 void D3DInfoPage::on_pipelineRunnerSelectBtn_pressed()
 {
-  QString filePath = MDCTool::ChooseFile(this, "Select Pipeline Runner Executable", tr("EXE Files (*.exe);;All Files (*.*)"));
+  QString filePath = MDCTool::ChooseFile(this, "Select Pipeline Runner Executable");
   if (filePath.isEmpty()) { return; }
 
   pipelineRunnerLineEdit->setText(filePath);
