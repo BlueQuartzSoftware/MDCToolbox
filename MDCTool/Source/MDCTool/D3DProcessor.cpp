@@ -37,10 +37,13 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QTime>
+#include <QtCore/QJsonDocument>
 
 #include <QtWidgets/QMessageBox>
 
 #include "PreviewTableModel.h"
+#include "MDCTool.h"
+#include "Constants.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -79,9 +82,11 @@ D3DProcessor::~D3DProcessor()
 // -----------------------------------------------------------------------------
 void D3DProcessor::run()
 {
-
-
   PreviewTableModel* model = PreviewTableModel::Instance();
+
+  // Read in the pipeline file and store as a QJsonObject.  We will treat this as a template.
+  int errorCode = 0;
+  QJsonObject templateObj = MDCTool::ReadJsonFile(m_PipelineFilePath, errorCode);
 
   // Now run the chosen pipeline on each image file in the table
   for (int i = 0; i < model->rowCount(); i++)
@@ -105,8 +110,30 @@ void D3DProcessor::run()
     model->setPipelineState(index.row(), PreviewTableItem::InProgress);
     emit processGeneratedMessage("Executing pipeline on \"" + imageFi.baseName() + "\"");
 
-    // Run the pipeline
-    delay(3);
+    {
+      QJsonObject obj = templateObj;
+      QJsonObject firstFilterObj = obj.find("0").value().toObject();
+      QJsonObject inputFileListObj = firstFilterObj.find("InputFileListInfo").value().toObject();
+      inputFileListObj["EndIndex"] = model->getFileIndex(i);
+      inputFileListObj["StartIndex"] = model->getFileIndex(i);
+      inputFileListObj["FileExtension"] = model->getFileExtension(i);
+      inputFileListObj["FilePrefix"] = model->getFilePrefix(i);
+      inputFileListObj["FileSuffix"] = model->getFileSuffix(i);
+      inputFileListObj["InputPath"] = model->getInputDirectory(i);
+      inputFileListObj["PaddingDigits"] = model->getPaddingDigits(i);
+
+      QJsonDocument doc(obj);
+
+      QFile outputFile("C:/Users/jkleingers/Desktop/jsonTest.json");
+      if (outputFile.open(QIODevice::WriteOnly))
+      {
+        outputFile.write(doc.toJson());
+        outputFile.close();
+      }
+
+      // Run the pipeline
+      delay(3);
+    }
 
     model->setPipelineState(index.row(), PreviewTableItem::DoneNoError);
     double value = (static_cast<double>(i + 1) / static_cast<double>(model->rowCount())) * 100;

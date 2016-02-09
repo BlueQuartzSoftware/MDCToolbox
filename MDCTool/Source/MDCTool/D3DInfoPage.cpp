@@ -101,7 +101,7 @@ void D3DInfoPage::showEvent(QShowEvent* event)
 // -----------------------------------------------------------------------------
 void D3DInfoPage::on_pipelineRunnerSelectBtn_pressed()
 {
-  QString filePath = MDCTool::ChooseFile(m_LastOpenDialogFilePath);
+  QString filePath = MDCTool::ChooseFile(this, "Select Pipeline Runner Executable", tr("EXE Files (*.exe);;All Files (*.*)"));
   if (filePath.isEmpty()) { return; }
 
   pipelineRunnerLineEdit->setText(filePath);
@@ -112,7 +112,7 @@ void D3DInfoPage::on_pipelineRunnerSelectBtn_pressed()
 // -----------------------------------------------------------------------------
 void D3DInfoPage::on_pipelineSelectBtn_pressed()
 {
-  QString filePath = MDCTool::ChooseFile(m_LastOpenDialogFilePath);
+  QString filePath = MDCTool::ChooseFile(this, "Select Pipeline File", tr("JSON Files (*.json);;All Files (*.*)"));
   if (filePath.isEmpty()) { return; }
 
   pipelineLineEdit->setText(filePath);
@@ -123,7 +123,7 @@ void D3DInfoPage::on_pipelineSelectBtn_pressed()
 // -----------------------------------------------------------------------------
 void D3DInfoPage::on_configSelectBtn_pressed()
 {
-  QString filePath = MDCTool::ChooseFile(m_LastOpenDialogFilePath, tr("JSON Files (*.json);;All Files (*.*)"));
+  QString filePath = MDCTool::ChooseFile(this, "Select Configuration File", tr("JSON Files (*.json);;All Files (*.*)"));
   if (filePath.isEmpty()) { return; }
 
   configLineEdit->setText(filePath);

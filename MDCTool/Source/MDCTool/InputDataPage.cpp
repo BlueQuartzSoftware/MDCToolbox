@@ -137,8 +137,12 @@ bool InputDataPage::validatePage()
     model->insertRow(row);
     model->setData(model->index(row, PreviewTableModel::Conditions), m_CondensedConfigText, Qt::DisplayRole);
     model->setData(model->index(row, PreviewTableModel::RawImagePath), filePath, Qt::DisplayRole);
-
-
+    model->setFileExtension(i, package.fileExtension);
+    model->setFileIndex(i, package.index);
+    model->setFilePrefix(i, package.filePrefix);
+    model->setFileSuffix(i, package.fileSuffix);
+    model->setInputDirectory(i, package.inputPath);
+    model->setPaddingDigits(i, package.paddingDigits);
   }
 
   // Return true, because we are only using this reimplemented function to do tasks between pages.

@@ -52,6 +52,7 @@
 
 #include "MDCToolStyles.h"
 #include "QFileCompleter.h"
+#include "MDCTool.h"
 
 // Initialize private static member variable
 QString ImportFilesWidget::m_OpenDialogLastDirectory = "";
@@ -126,9 +127,8 @@ void ImportFilesWidget::checkIOFiles()
 // -----------------------------------------------------------------------------
 void ImportFilesWidget::on_m_InputDirBtn_clicked()
 {
-  // std::cout << "on_angDirBtn_clicked" << std::endl;
-  QString outputFile = this->getOpenDialogLastDirectory() + QDir::separator();
-  outputFile = QFileDialog::getExistingDirectory(this, tr("Select Image Directory"), outputFile);
+  QString outputFile = MDCTool::ChooseDirectory(this, "Select Image Directory");
+  
   if (!outputFile.isNull())
   {
     m_InputDir->blockSignals(true);

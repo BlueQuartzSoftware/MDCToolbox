@@ -53,7 +53,10 @@ class MDCTool : public QWizard
     MDCTool(QWidget* parent = 0);
     ~MDCTool();
 
-    static QString ChooseFile(QString &lastFilePath, const QString &filter = QString());
+    static QString m_LastOpenDialogFilePath;
+
+    static QString ChooseFile(QWidget* parent = NULL, const QString &caption = QString(), const QString &filter = QString());
+    static QString ChooseDirectory(QWidget* parent = NULL, const QString &caption = QString());
 
     static QString TokenizeConfiguration(MDCConfiguration* config, char token = ';');
 
@@ -65,7 +68,6 @@ class MDCTool : public QWizard
     void setupGui();
 
   private:
-    QString                                           m_OpenDialogLastDirectory;
     int                                               m_CurrentPageId;
 
     QVector<QSharedPointer<MDCConfiguration> >        m_Configurations;

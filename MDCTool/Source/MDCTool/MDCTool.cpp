@@ -57,12 +57,13 @@
 
 #include <iostream>
 
+QString MDCTool::m_LastOpenDialogFilePath = "";
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 MDCTool::MDCTool(QWidget* parent) :
   QWizard(parent),
-  m_OpenDialogLastDirectory(""),
   m_CurrentPageId(0)
 {
   setupGui();
@@ -122,14 +123,29 @@ void MDCTool::setupGui()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString MDCTool::ChooseFile(QString &lastFilePath, const QString &filter)
+QString MDCTool::ChooseFile(QWidget* parent, const QString &caption, const QString &filter)
 {
-  QString filePath = QFileDialog::getOpenFileName(NULL, tr("Select File"), lastFilePath, filter);
+  QString filePath = QFileDialog::getOpenFileName(parent, caption, m_LastOpenDialogFilePath, filter);
 
   filePath = QDir::toNativeSeparators(filePath);
 
   // Store the last used directory into the private instance variable
-  lastFilePath = filePath;
+  m_LastOpenDialogFilePath = filePath;
+
+  return filePath;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+QString MDCTool::ChooseDirectory(QWidget* parent, const QString &caption)
+{
+  QString filePath = QFileDialog::getExistingDirectory(parent, caption, m_LastOpenDialogFilePath);
+
+  filePath = QDir::toNativeSeparators(filePath);
+
+  // Store the last used directory into the private instance variable
+  m_LastOpenDialogFilePath = filePath;
 
   return filePath;
 }
