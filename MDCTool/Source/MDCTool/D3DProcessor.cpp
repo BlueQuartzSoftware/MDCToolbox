@@ -247,23 +247,23 @@ bool D3DProcessor::executePipeline(const QString &pipelineFilePath, const QStrin
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void D3DProcessor::displayErrorsAndWarnings(QString msg, D3DProcessorObserver* obs)
+void D3DProcessor::displayErrorsAndWarnings(QString basicMsg, D3DProcessorObserver* obs)
 {
   QStringList errorMessages = obs->getErrorMessages();
   QStringList warningMessages = obs->getWarningMessages();
 
   for (int i = 0; i < errorMessages.size(); i++)
   {
-    msg.append(errorMessages[i] + "<br><br>");
+    basicMsg.append(errorMessages[i] + "<br><br>");
   }
   for (int i = 0; i < warningMessages.size(); i++)
   {
-    msg.append(warningMessages[i] + "<br><br>");
+    basicMsg.append(warningMessages[i] + "<br><br>");
   }
 
-  msg.append("Stopping execution.");
+  QString completeMsg = basicMsg.append("Stopping execution.");
 
-  QMessageBox::critical(NULL, "MDCTool Error", msg, QMessageBox::Ok);
+  QMessageBox::critical(NULL, "MDCTool Error", completeMsg, QMessageBox::Ok);
 }
 
 // -----------------------------------------------------------------------------

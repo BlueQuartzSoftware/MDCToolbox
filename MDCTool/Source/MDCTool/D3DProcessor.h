@@ -67,7 +67,7 @@ class D3DProcessor : public QObject
     };
 
     bool executePipeline(const QString &pipelineFilePath, const QString imageFileName);
-    void displayErrorsAndWarnings(QString msg, D3DProcessorObserver* obs);
+    void displayErrorsAndWarnings(QString basicMsg, D3DProcessorObserver* obs);
 
     QString                                   m_PipelineFilePath;
     QString                                   m_OutputDir;
