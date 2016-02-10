@@ -31,6 +31,7 @@ set(MDCTool_SRCS
   ${MDCTool_SOURCE_DIR}/D3DInfoPage.cpp
   ${MDCTool_SOURCE_DIR}/D3DProcessingPage.cpp
   ${MDCTool_SOURCE_DIR}/D3DProcessor.cpp
+  ${MDCTool_SOURCE_DIR}/D3DProcessorObserver.cpp
   ${MDCTool_SOURCE_DIR}/FilePathGenerator.cpp
   ${MDCTool_SOURCE_DIR}/GatherDataPage.cpp
   ${MDCTool_SOURCE_DIR}/ImportFilesWidget.cpp
@@ -47,15 +48,16 @@ set(MDCTool_SRCS
   )
 
 SET(MDCTool_HDRS
+    ${MDCTool_SOURCE_DIR}/Constants.h
     ${MDCTool_SOURCE_DIR}/FilePathGenerator.h
     ${MDCTool_SOURCE_DIR}/PreviewTableItem.h
-    ${MDCTool_SOURCE_DIR}/Constants.h
   )
 
 SET(MDCTool_MOC_HDRS
     ${MDCTool_SOURCE_DIR}/D3DInfoPage.h
     ${MDCTool_SOURCE_DIR}/D3DProcessingPage.h
     ${MDCTool_SOURCE_DIR}/D3DProcessor.h
+    ${MDCTool_SOURCE_DIR}/D3DProcessorObserver.h
     ${MDCTool_SOURCE_DIR}/GatherDataPage.h
     ${MDCTool_SOURCE_DIR}/ImportFilesWidget.h
     ${MDCTool_SOURCE_DIR}/InputDataPage.h

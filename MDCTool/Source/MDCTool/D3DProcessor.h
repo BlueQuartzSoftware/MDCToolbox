@@ -38,6 +38,8 @@
 
 #include <QtCore/QObject>
 
+class D3DProcessorObserver;
+
 class D3DProcessor : public QObject
 {
     Q_OBJECT
@@ -64,7 +66,8 @@ class D3DProcessor : public QObject
       QString errorMessage;
     };
 
-    D3DProcessor::ErrorPackage executePipeline(const QString &pipelineFilePath);
+    bool executePipeline(const QString &pipelineFilePath, const QString imageFileName);
+    void displayErrorsAndWarnings(QString msg, D3DProcessorObserver* obs);
 
     QString                                   m_PipelineFilePath;
     QString                                   m_OutputDir;

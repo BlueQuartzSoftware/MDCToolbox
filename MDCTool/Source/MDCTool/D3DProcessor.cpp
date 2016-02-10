@@ -49,6 +49,7 @@
 
 #include "PreviewTableModel.h"
 #include "MDCTool.h"
+#include "D3DProcessorObserver.h"
 #include "Constants.h"
 #include "MDCToolProjTempFileLocations.h"
 
@@ -96,7 +97,6 @@ void D3DProcessor::run()
   QJsonObject templateObj = MDCTool::ReadJsonFile(m_PipelineFilePath, errorCode);
 
   // Now run the chosen pipeline on each image file in the table
-  bool hasErrors = false;
   for (int i = 0; i < model->rowCount(); i++)
   {
     QModelIndex index = model->index(i, PreviewTableModel::RawImagePath);
@@ -159,12 +159,11 @@ void D3DProcessor::run()
       delay(1);   // Artificial delay to see progress better
 
       // Run the pipeline
-      ErrorPackage errPackage = executePipeline(MDCToolPipelines::MDCToolTempPipeline);
-      if (errPackage.errorCode < 0)
+      bool noErrors = executePipeline(MDCToolPipelines::MDCToolTempPipeline, imageFi.fileName());
+      if (noErrors == false)
       {
         model->setPipelineState(index.row(), PreviewTableItem::DoneError);
-        model->setData(model->index(i, PreviewTableModel::D3DOutputPath), errPackage.errorMessage, Qt::DisplayRole);
-        hasErrors = true;
+        m_Stop = true;
       }
       else
       {
@@ -193,19 +192,13 @@ void D3DProcessor::run()
     emit processGeneratedMessage("The process has finished.");
   }
 
-  if (hasErrors == true)
-  {
-    QString s = tr("Errors occurred while running the pipeline on each image file.\n\nCheck the preview table to view all errors.");
-    QMessageBox::critical(NULL, "MDCTool Error", s, QMessageBox::Ok);
-  }
-
   emit processFinished();
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-D3DProcessor::ErrorPackage D3DProcessor::executePipeline(const QString &pipelineFilePath)
+bool D3DProcessor::executePipeline(const QString &pipelineFilePath, const QString imageFileName)
 {
   QFileInfo fi(pipelineFilePath);
   QString ext = fi.completeSuffix();
@@ -215,20 +208,24 @@ D3DProcessor::ErrorPackage D3DProcessor::executePipeline(const QString &pipeline
 
   if (NULL == pipeline.get())
   {
-    ErrorPackage package;
-    package.errorCode = -1;
-    package.errorMessage = "An error occurred while trying to read the pipeline file.";
-    return package;
+    QString s = "An error occurred while trying to read the pipeline file.  Stopping execution.";
+    QMessageBox::critical(NULL, "MDCTool Error", s, QMessageBox::Ok);
+    return false;
   }
+
+  QSharedPointer<D3DProcessorObserver> obs = QSharedPointer<D3DProcessorObserver>(new D3DProcessorObserver()); // Create an Observer to report errors/progress from the executing pipeline
+  pipeline->addMessageReceiver(obs.data());
 
   // Preflight the pipeline
   int err = pipeline->preflightPipeline();
   if (err < 0)
   {
-    ErrorPackage package;
-    package.errorCode = -1;
-    package.errorMessage = "An error (" + QString::number(err) + ") occurred while trying to preflight the pipeline file.";
-    return package;
+    QStringList errorMessages = obs->getErrorMessages();
+    QStringList warningMessages = obs->getWarningMessages();
+
+    QString s = "There were <b>" + QString::number(errorMessages.size()) + " errors</b> and <b>" + QString::number(warningMessages.size()) + " warnings</b> that occurred while trying to preflight the pipeline file with data from image file \"" + imageFileName + "\":<br><br>";
+    displayErrorsAndWarnings(s, obs.data());
+    return false;
   }
 
   // Now actually execute the pipeline
@@ -236,15 +233,37 @@ D3DProcessor::ErrorPackage D3DProcessor::executePipeline(const QString &pipeline
   err = pipeline->getErrorCondition();
   if (err < 0)
   {
-    ErrorPackage package;
-    package.errorCode = -1;
-    package.errorMessage = "An error (" + QString::number(err) + ") occurred during the execution of the pipeline file.";
-    return package;
+    QStringList errorMessages = obs->getErrorMessages();
+    QStringList warningMessages = obs->getWarningMessages();
+
+    QString s = "There were <b>" + QString::number(errorMessages.size()) + " errors</b> and <b>" + QString::number(warningMessages.size()) + " warnings</b> that occurred during the execution of the pipeline file with data from image file \"" + imageFileName + "\":<br><br>";
+    displayErrorsAndWarnings(s, obs.data());
+    return false;
   }
 
-  ErrorPackage package;
-  package.errorCode = 0;
-  return package;
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void D3DProcessor::displayErrorsAndWarnings(QString msg, D3DProcessorObserver* obs)
+{
+  QStringList errorMessages = obs->getErrorMessages();
+  QStringList warningMessages = obs->getWarningMessages();
+
+  for (int i = 0; i < errorMessages.size(); i++)
+  {
+    msg.append(errorMessages[i] + "<br><br>");
+  }
+  for (int i = 0; i < warningMessages.size(); i++)
+  {
+    msg.append(warningMessages[i] + "<br><br>");
+  }
+
+  msg.append("Stopping execution.");
+
+  QMessageBox::critical(NULL, "MDCTool Error", msg, QMessageBox::Ok);
 }
 
 // -----------------------------------------------------------------------------
