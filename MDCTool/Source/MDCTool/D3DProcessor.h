@@ -43,7 +43,7 @@ class D3DProcessor : public QObject
     Q_OBJECT
 
   public:
-    D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, QObject* parent = NULL);
+    D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, const QString &outputDir, QObject* parent = NULL);
     virtual ~D3DProcessor();
 
     void setStop(bool val);
@@ -58,8 +58,17 @@ class D3DProcessor : public QObject
     void processGeneratedProgressValue(double value);
 
   private:
+    struct ErrorPackage
+    {
+      int errorCode;
+      QString errorMessage;
+    };
+
+    D3DProcessor::ErrorPackage executePipeline(const QString &pipelineFilePath);
+
     QString                                   m_PipelineFilePath;
     QString                                   m_PipelineRunnerFilePath;
+    QString                                   m_OutputDir;
 
     bool                                      m_Stop;
 

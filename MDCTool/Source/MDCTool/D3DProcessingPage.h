@@ -80,6 +80,8 @@ class D3DProcessingPage : public QWizardPage, private Ui::D3DProcessingPage
 
   protected slots:
     void on_startBtn_pressed();
+    void on_outputDirBtn_pressed();
+    void on_outputDir_textChanged(const QString &text);
     void modelLoadingGif_frameChanged(int frameNumber);
     void processDidFinish();
     void updateStatusMessage(const QString &msg);

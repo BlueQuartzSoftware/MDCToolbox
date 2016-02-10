@@ -60,6 +60,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
   "Single Directory for all static libraries."
   )
 
+include_directories(${PROJECT_BINARY_DIR}/TempFiles)
+
+configure_file(${PROJECT_SOURCE_DIR}/TempFiles/TempFileLocations.h.in
+               ${PROJECT_BINARY_DIR}/TempFiles/${PROJECT_NAME}TempFileLocations.h @ONLY IMMEDIATE)
 
 #Enable use of Solution Folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

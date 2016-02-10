@@ -144,8 +144,12 @@ QString MDCTool::ChooseDirectory(QWidget* parent, const QString &caption)
 
   filePath = QDir::toNativeSeparators(filePath);
 
+  QFileInfo fi(filePath);
+
   // Store the last used directory into the private instance variable
-  m_LastOpenDialogFilePath = filePath;
+  QString path = fi.path();
+  path = QDir::toNativeSeparators(path);
+  m_LastOpenDialogFilePath = path;
 
   return filePath;
 }

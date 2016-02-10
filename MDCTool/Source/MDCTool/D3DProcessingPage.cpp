@@ -36,6 +36,7 @@
 #include "D3DProcessingPage.h"
 
 #include <QtCore/QFileInfo>
+#include <QtCore/QDir>
 
 #include <QtGui/QMovie>
 
@@ -46,6 +47,7 @@
 #include "D3DProcessor.h"
 #include "PreviewTableModel.h"
 #include "Constants.h"
+#include "MDCTool.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -76,10 +78,13 @@ void D3DProcessingPage::setupGui()
   PreviewTableModel* model = PreviewTableModel::Instance();
   tableView->setModel(model);
   tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::Conditions, QHeaderView::ResizeToContents);
-  tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::RawImagePath, QHeaderView::Stretch);
+  tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::RawImagePath, QHeaderView::ResizeToContents);
   tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::D3DOutputPath, QHeaderView::Stretch);
 
   connect(model->getLoadingGif(), SIGNAL(frameChanged(int)), this, SLOT(modelLoadingGif_frameChanged(int)));
+
+  // Disable start button until Output Directory is filled in
+  startBtn->setDisabled(true);
 }
 
 // -----------------------------------------------------------------------------
@@ -118,7 +123,7 @@ void D3DProcessingPage::on_startBtn_pressed()
 
   QString pipelineFilePath = field(MDCToolSpace::FieldNames::PipelineFilePath).toString();
   QString pipelineRunnerFilePath = field(MDCToolSpace::FieldNames::PipelineRunnerFilePath).toString();
-  m_Processor = QSharedPointer<D3DProcessor>(new D3DProcessor(pipelineFilePath, pipelineRunnerFilePath));
+  m_Processor = QSharedPointer<D3DProcessor>(new D3DProcessor(pipelineFilePath, pipelineRunnerFilePath, outputDir->text(), this));
 
   // When the thread starts its event loop, start the PipelineBuilder going
   connect(m_WorkerThread, SIGNAL(started()),
@@ -155,6 +160,7 @@ void D3DProcessingPage::on_startBtn_pressed()
     for (int i = 0; i < model->rowCount(); i++)
     {
       model->setPipelineState(i, PreviewTableItem::NotRunning);
+      model->setData(model->index(i, PreviewTableModel::D3DOutputPath), "", Qt::DisplayRole);
     }
   }
 
@@ -175,6 +181,33 @@ void D3DProcessingPage::processDidFinish()
   m_Processor->setStop(false);
   wizard()->button(QWizard::BackButton)->setEnabled(true);
   startBtn->setText("Start");
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void D3DProcessingPage::on_outputDirBtn_pressed()
+{
+  QString outputDirPath = MDCTool::ChooseDirectory(this, "Choose Output Directory");
+  if (outputDirPath.isEmpty()) { return; }
+
+  outputDir->setText(outputDirPath);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void D3DProcessingPage::on_outputDir_textChanged(const QString &text)
+{
+  QDir dir(text);
+  if (text.isEmpty() == false && dir.exists() == true)
+  {
+    startBtn->setEnabled(true);
+  }
+  else
+  {
+    startBtn->setDisabled(true);
+  }
 }
 
 // -----------------------------------------------------------------------------

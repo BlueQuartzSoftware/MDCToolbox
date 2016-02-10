@@ -41,9 +41,15 @@
 
 #include <QtWidgets/QMessageBox>
 
+#include "SIMPLib/Common/FilterPipeline.h"
+#include "SIMPLib/FilterParameters/JsonFilterParametersReader.h"
+#include "SIMPLib/Utilities/TestObserver.h"
+#include "SIMPLib/Utilities/UnitTestSupport.hpp"
+
 #include "PreviewTableModel.h"
 #include "MDCTool.h"
 #include "Constants.h"
+#include "MDCToolProjTempFileLocations.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -60,10 +66,11 @@ void delay(int seconds)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-D3DProcessor::D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, QObject* parent) :
+D3DProcessor::D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, const QString &outputDir, QObject* parent) :
   QObject(parent),
   m_PipelineFilePath(pipelineFilePath),
   m_PipelineRunnerFilePath(pipelineRunnerFilePath),
+  m_OutputDir(outputDir),
   m_Stop(false)
 {
 
@@ -89,6 +96,7 @@ void D3DProcessor::run()
   QJsonObject templateObj = MDCTool::ReadJsonFile(m_PipelineFilePath, errorCode);
 
   // Now run the chosen pipeline on each image file in the table
+  bool hasErrors = false;
   for (int i = 0; i < model->rowCount(); i++)
   {
     QModelIndex index = model->index(i, PreviewTableModel::RawImagePath);
@@ -122,27 +130,50 @@ void D3DProcessor::run()
       inputFileListObj["InputPath"] = model->getInputDirectory(i);
       inputFileListObj["PaddingDigits"] = model->getPaddingDigits(i);
 
+      QJsonObject::iterator iter = obj.end();
+      iter--;
+      if (iter.key() == "PipelineBuilder")
+      {
+        iter--;
+      }
+
+      QJsonObject lastFilterObj = iter.value().toObject();
+      QString outputFilePath = m_OutputDir + imageFi.baseName() + ".dream3d";
+      lastFilterObj["OutputFile"] = outputFilePath;
+
       // We have to copy these back into the original object, because there is no support for QJsonObject references yet.
       firstFilterObj["InputFileListInfo"] = inputFileListObj;
       obj["0"] = firstFilterObj;
+      obj[iter.key()] = lastFilterObj;
 
       QJsonDocument doc(obj);
 
-      QString tempPipelinePath = m_PipelineFilePath + ".temp";
-      QFile tempPipelineFile(tempPipelinePath);
+      QFile tempPipelineFile(MDCToolPipelines::MDCToolTempPipeline);
       if (tempPipelineFile.open(QIODevice::WriteOnly))
       {
         tempPipelineFile.write(doc.toJson());
         tempPipelineFile.close();
       }
 
+      delay(1);   // Artificial delay to see progress better
+
       // Run the pipeline
-      delay(3);
+      ErrorPackage errPackage = executePipeline(MDCToolPipelines::MDCToolTempPipeline);
+      if (errPackage.errorCode < 0)
+      {
+        model->setPipelineState(index.row(), PreviewTableItem::DoneError);
+        model->setData(model->index(i, PreviewTableModel::D3DOutputPath), errPackage.errorMessage, Qt::DisplayRole);
+        hasErrors = true;
+      }
+      else
+      {
+        model->setPipelineState(index.row(), PreviewTableItem::DoneNoError);
+        model->setData(model->index(i, PreviewTableModel::D3DOutputPath), outputFilePath, Qt::DisplayRole);
+      }
 
       tempPipelineFile.remove();
     }
 
-    model->setPipelineState(index.row(), PreviewTableItem::DoneNoError);
     double value = (static_cast<double>(i + 1) / static_cast<double>(model->rowCount())) * 100;
     emit processGeneratedProgressValue(value);
 
@@ -161,7 +192,58 @@ void D3DProcessor::run()
     emit processGeneratedMessage("The process has finished.");
   }
 
+  if (hasErrors == true)
+  {
+    QString s = tr("Errors occurred while running the pipeline on each image file.\n\nCheck the preview table to view all errors.");
+    QMessageBox::critical(NULL, "MDCTool Error", s, QMessageBox::Ok);
+  }
+
   emit processFinished();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+D3DProcessor::ErrorPackage D3DProcessor::executePipeline(const QString &pipelineFilePath)
+{
+  QFileInfo fi(pipelineFilePath);
+  QString ext = fi.completeSuffix();
+
+  // Use the static method to read the Pipeline file and return a Filter Pipeline
+  FilterPipeline::Pointer pipeline = JsonFilterParametersReader::ReadPipelineFromFile(pipelineFilePath);
+
+  if (NULL == pipeline.get())
+  {
+    ErrorPackage package;
+    package.errorCode = -1;
+    package.errorMessage = "An error occurred while trying to read the pipeline file.";
+    return package;
+  }
+
+  // Preflight the pipeline
+  int err = pipeline->preflightPipeline();
+  if (err < 0)
+  {
+    ErrorPackage package;
+    package.errorCode = -1;
+    package.errorMessage = "An error (" + QString::number(err) + ") occurred while trying to preflight the pipeline file.";
+    return package;
+  }
+
+  // Now actually execute the pipeline
+  pipeline->execute();
+  err = pipeline->getErrorCondition();
+  if (err < 0)
+  {
+    ErrorPackage package;
+    package.errorCode = -1;
+    package.errorMessage = "An error (" + QString::number(err) + ") occurred during the execution of the pipeline file.";
+    return package;
+  }
+
+  ErrorPackage package;
+  package.errorCode = 0;
+  return package;
 }
 
 // -----------------------------------------------------------------------------
