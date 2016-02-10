@@ -38,6 +38,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QTime>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QDir>
 
 #include <QtWidgets/QMessageBox>
 
@@ -66,10 +67,9 @@ void delay(int seconds)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-D3DProcessor::D3DProcessor(const QString &pipelineFilePath, const QString &pipelineRunnerFilePath, const QString &outputDir, QObject* parent) :
+D3DProcessor::D3DProcessor(const QString &pipelineFilePath, const QString &outputDir, QObject* parent) :
   QObject(parent),
   m_PipelineFilePath(pipelineFilePath),
-  m_PipelineRunnerFilePath(pipelineRunnerFilePath),
   m_OutputDir(outputDir),
   m_Stop(false)
 {
@@ -138,7 +138,8 @@ void D3DProcessor::run()
       }
 
       QJsonObject lastFilterObj = iter.value().toObject();
-      QString outputFilePath = m_OutputDir + imageFi.baseName() + ".dream3d";
+      QString outputFilePath = m_OutputDir + "/" + imageFi.baseName() + ".dream3d";
+      outputFilePath = QDir::toNativeSeparators(outputFilePath);
       lastFilterObj["OutputFile"] = outputFilePath;
 
       // We have to copy these back into the original object, because there is no support for QJsonObject references yet.

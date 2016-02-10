@@ -46,14 +46,14 @@
 #include "InputDataPage.h"
 #include "D3DProcessingPage.h"
 #include "PreviewTableModel.h"
+#include "SendToExtToolPage.h"
 #include "Constants.h"
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 D3DInfoPage::D3DInfoPage(QWidget* parent) :
-  QWizardPage(parent),
-  m_LastOpenDialogFilePath("")
+  QWizardPage(parent)
 {
   setupUi(this);
 
@@ -74,7 +74,6 @@ D3DInfoPage::~D3DInfoPage()
 void D3DInfoPage::setupGui()
 {
   registerField(MDCToolSpace::FieldNames::PipelineFilePath, pipelineLineEdit);
-  registerField(MDCToolSpace::FieldNames::PipelineRunnerFilePath, pipelineRunnerLineEdit);
   registerField(MDCToolSpace::FieldNames::ConfigFilePath, configLineEdit);
 }
 
@@ -83,7 +82,7 @@ void D3DInfoPage::setupGui()
 // -----------------------------------------------------------------------------
 void D3DInfoPage::showEvent(QShowEvent* event)
 {
-  wizard()->setWindowTitle("MDCTool");
+  wizard()->setWindowTitle("MDCTool - Step 1");
 
   /* This section of code will get hit when the user gets back to this page from the "Back" button
      It just removes any future pages, because we will be reading the configuration file again. */
@@ -94,17 +93,6 @@ void D3DInfoPage::showEvent(QShowEvent* event)
 
     wizard()->removePage(id);
   }
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void D3DInfoPage::on_pipelineRunnerSelectBtn_pressed()
-{
-  QString filePath = MDCTool::ChooseFile(this, "Select Pipeline Runner Executable");
-  if (filePath.isEmpty()) { return; }
-
-  pipelineRunnerLineEdit->setText(filePath);
 }
 
 // -----------------------------------------------------------------------------
@@ -150,13 +138,11 @@ void D3DInfoPage::on_pipelineLineEdit_textChanged(const QString &text)
 // -----------------------------------------------------------------------------
 bool D3DInfoPage::isComplete() const
 {
-  if (pipelineRunnerLineEdit->text().isEmpty() == false && pipelineLineEdit->text().isEmpty() == false
-    && configLineEdit->text().isEmpty() == false)
+  if (pipelineLineEdit->text().isEmpty() == false && configLineEdit->text().isEmpty() == false)
   {
-    QFileInfo prFi(pipelineRunnerLineEdit->text());
     QFileInfo pFi(pipelineLineEdit->text());
     QFileInfo cFi(configLineEdit->text());
-    if (prFi.exists() && pFi.exists() && cFi.exists())
+    if (pFi.exists() && cFi.exists())
     {
       return true;
     }
@@ -336,6 +322,12 @@ bool D3DInfoPage::validatePage()
   // Add the processing page (this is where we run the chosen pipeline with each image file)
   D3DProcessingPage* d3dProcessingPage = new D3DProcessingPage(wizard());
   wizard()->setPage(pageId, d3dProcessingPage);
+
+  pageId++;
+
+  // Add the SendToExtTool page (this is where we send the gathered information to the external tool)
+  SendToExtToolPage* sendPage = new SendToExtToolPage(wizard());
+  wizard()->setPage(pageId, sendPage);
 
   return true;
 }

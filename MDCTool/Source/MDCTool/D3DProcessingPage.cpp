@@ -122,8 +122,7 @@ void D3DProcessingPage::on_startBtn_pressed()
   m_WorkerThread = new QThread(); // Create a new Thread Resource
 
   QString pipelineFilePath = field(MDCToolSpace::FieldNames::PipelineFilePath).toString();
-  QString pipelineRunnerFilePath = field(MDCToolSpace::FieldNames::PipelineRunnerFilePath).toString();
-  m_Processor = QSharedPointer<D3DProcessor>(new D3DProcessor(pipelineFilePath, pipelineRunnerFilePath, outputDir->text(), this));
+  m_Processor = QSharedPointer<D3DProcessor>(new D3DProcessor(pipelineFilePath, outputDir->text(), this));
 
   // When the thread starts its event loop, start the PipelineBuilder going
   connect(m_WorkerThread, SIGNAL(started()),
@@ -269,7 +268,22 @@ void D3DProcessingPage::cleanupPage()
   for (int i = 0; i < model->rowCount(); i++)
   {
     model->setPipelineState(i, PreviewTableItem::NotRunning);
+    model->setData(model->index(i, PreviewTableModel::D3DOutputPath), "", Qt::DisplayRole);
   }
 
   QWizardPage::cleanupPage();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool D3DProcessingPage::validatePage()
+{
+  PreviewTableModel* model = PreviewTableModel::Instance();
+  for (int i = 0; i < model->rowCount(); i++)
+  {
+    model->setPipelineState(i, PreviewTableItem::NotRunning);
+  }
+
+  return true;
 }

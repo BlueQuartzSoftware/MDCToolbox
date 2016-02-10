@@ -34,18 +34,14 @@
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-#ifndef _D3DProcessingPage_H_
-#define _D3DProcessingPage_H_
-
-#include <QtCore/QThread>
+#ifndef _SendToExtToolPage_H_
+#define _SendToExtToolPage_H_
 
 #include <QtWidgets/QWizardPage>
 
-#include "ui_D3DProcessingPage.h"
+#include "ui_SendToExtToolPage.h"
 
-class D3DProcessor;
-
-class D3DProcessingPage : public QWizardPage, private Ui::D3DProcessingPage
+class SendToExtToolPage : public QWizardPage, private Ui::SendToExtToolPage
 {
   Q_OBJECT
 
@@ -56,9 +52,9 @@ class D3DProcessingPage : public QWizardPage, private Ui::D3DProcessingPage
     * @param filter The instance of the filter that this parameter is a part of
     * @param parent The parent QWidget for this Widget
     */
-    D3DProcessingPage(QWidget* parent = NULL);
+    SendToExtToolPage(QWidget* parent = NULL);
 
-    virtual ~D3DProcessingPage();
+    virtual ~SendToExtToolPage();
 
     /**
      * @brief Initializes some of the GUI elements with selections or other GUI related items
@@ -71,11 +67,6 @@ class D3DProcessingPage : public QWizardPage, private Ui::D3DProcessingPage
     bool isComplete() const;
 
     /**
-    * @brief Cleans up the page when the user presses the "Back" button
-    */
-    void cleanupPage();
-
-    /**
     * @brief Slot that is called after the user presses Next but before the next page shows
     */
     bool validatePage();
@@ -84,27 +75,15 @@ class D3DProcessingPage : public QWizardPage, private Ui::D3DProcessingPage
     void showEvent(QShowEvent* event);
 
   protected slots:
-    void on_startBtn_pressed();
-    void on_outputDirBtn_pressed();
-    void on_outputDir_textChanged(const QString &text);
-    void modelLoadingGif_frameChanged(int frameNumber);
-    void processDidFinish();
-    void updateStatusMessage(const QString &msg);
-    void updateProgress(double value);
-
-  signals:
-    void processStopped();
+    void on_extToolLocationBtn_pressed();
+    void on_extToolLocationEdit_textChanged(const QString &text);
 
   private:
-    QThread*                                    m_WorkerThread;
-    QSharedPointer<D3DProcessor>                m_Processor;
+    int                                             m_NumLines;
+    QString                                         m_LastOpenDialogFilePath;
 
-    QMovie*                                     m_LoadingGif;
-
-    bool                                        m_FirstRun;
-
-    D3DProcessingPage(const D3DProcessingPage&); // Copy Constructor Not Implemented
-    void operator=(const D3DProcessingPage&); // Operator '=' Not Implemented
+    SendToExtToolPage(const SendToExtToolPage&); // Copy Constructor Not Implemented
+    void operator=(const SendToExtToolPage&); // Operator '=' Not Implemented
 };
 
-#endif /* D3DProcessingPage_H_ */
+#endif /* SendToExtToolPage_H_ */

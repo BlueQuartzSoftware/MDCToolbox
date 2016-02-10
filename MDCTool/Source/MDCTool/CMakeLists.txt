@@ -42,6 +42,7 @@ set(MDCTool_SRCS
   ${MDCTool_SOURCE_DIR}/PreviewTableModel.cpp
   ${MDCTool_SOURCE_DIR}/QFSDropLineEdit.cpp
   ${MDCTool_SOURCE_DIR}/QFileCompleter.cpp
+  ${MDCTool_SOURCE_DIR}/SendToExtToolPage.cpp
   ${MDCTool_SOURCE_DIR}/main.cpp
   )
 
@@ -64,6 +65,7 @@ SET(MDCTool_MOC_HDRS
     ${MDCTool_SOURCE_DIR}/PreviewTableModel.h
     ${MDCTool_SOURCE_DIR}/QFSDropLineEdit.h
     ${MDCTool_SOURCE_DIR}/QFileCompleter.h
+    ${MDCTool_SOURCE_DIR}/SendToExtToolPage.h
   )
 
 cmp_IDE_SOURCE_PROPERTIES( "MDCTool" "${MDCTool_HDRS};${MDCTool_MOC_HDRS}" "${MDCTool_SRCS}" "${PROJECT_INSTALL_HEADERS}")
@@ -75,6 +77,7 @@ SET(MDCTool_UIS
   ${MDCTool_SOURCE_DIR}/UI_Files/GatherDataPage.ui
   ${MDCTool_SOURCE_DIR}/UI_Files/ImportFilesWidget.ui
   ${MDCTool_SOURCE_DIR}/UI_Files/InputDataPage.ui
+  ${MDCTool_SOURCE_DIR}/UI_Files/SendToExtToolPage.ui
 )
 
 cmp_IDE_GENERATED_PROPERTIES("MDCTool/UI_Files" "${MDCTool_UIS}" "")

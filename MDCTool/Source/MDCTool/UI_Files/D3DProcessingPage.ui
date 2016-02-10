@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
-    <height>568</height>
+    <width>672</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,29 +26,29 @@
    <property name="bottomMargin">
     <number>3</number>
    </property>
-   <item row="2" column="1">
-    <widget class="QFSDropLineEdit" name="outputDir"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_29">
-     <property name="toolTip">
-      <string>The directory that contains the .ang or .ctf files</string>
+   <item row="6" column="0" colspan="3">
+    <widget class="QTableView" name="tableView">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>192</height>
+      </size>
      </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-font-weight: bold;
-font-size: 11px;
-}</string>
-     </property>
-     <property name="text">
-      <string>Output Directory:</string>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::NoSelection</enum>
      </property>
     </widget>
    </item>
-   <item row="2" column="2">
-    <widget class="QPushButton" name="outputDirBtn">
+   <item row="0" column="0" colspan="3">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Select</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Choose an Output Directory and press &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Start&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; to execute the pipeline that you chose earlier on each image file in the preview table.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;You may not continue until the execution has completed and there are no errors.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -106,13 +106,29 @@ font-size: 11px;
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="3">
-    <widget class="QTableView" name="tableView">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>192</height>
-      </size>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_29">
+     <property name="toolTip">
+      <string>The directory that contains the .ang or .ctf files</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+font-weight: bold;
+font-size: 11px;
+}</string>
+     </property>
+     <property name="text">
+      <string>Output Directory:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QFSDropLineEdit" name="outputDir"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="outputDirBtn">
+     <property name="text">
+      <string>Select</string>
      </property>
     </widget>
    </item>
@@ -120,19 +136,6 @@ font-size: 11px;
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
       <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="3">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Choose an Output Directory and press &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Start&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; to execute the pipeline that you chose earlier, with each image file in the table as an input.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;You may not continue until the execution has completed.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
      </property>
     </widget>
    </item>

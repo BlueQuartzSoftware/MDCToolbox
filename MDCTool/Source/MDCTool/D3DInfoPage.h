@@ -78,7 +78,6 @@ class D3DInfoPage : public QWizardPage, private Ui::D3DInfoPage
     void showEvent(QShowEvent* event);
 
   protected slots:
-    void on_pipelineRunnerSelectBtn_pressed();
     void on_pipelineSelectBtn_pressed();
     void on_configSelectBtn_pressed();
     void on_pipelineRunnerLineEdit_textChanged(const QString &text);
@@ -86,7 +85,6 @@ class D3DInfoPage : public QWizardPage, private Ui::D3DInfoPage
 
   private:
     int                                             m_NumLines;
-    QString                                         m_LastOpenDialogFilePath;
 
     D3DInfoPage(const D3DInfoPage&); // Copy Constructor Not Implemented
     void operator=(const D3DInfoPage&); // Operator '=' Not Implemented

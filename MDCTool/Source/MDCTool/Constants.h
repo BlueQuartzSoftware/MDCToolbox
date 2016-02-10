@@ -46,6 +46,7 @@ namespace MDCToolSpace
     const QString PipelineFilePath = "pipelineFilePath";
     const QString PipelineRunnerFilePath = "pipelineRunnerFilePath";
     const QString ConfigFilePath = "configFilePath";
+    const QString ExtToolLocationFilePath = "externalToolLocationFilePath";
   }
 
   namespace ReplacementMonikers
