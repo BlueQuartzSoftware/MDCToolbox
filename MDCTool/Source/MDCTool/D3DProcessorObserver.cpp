@@ -65,6 +65,10 @@ void D3DProcessorObserver::processPipelineMessage(const PipelineMessage& pm)
   {
     m_WarningMessages.push_back("<b>" + msg.getFilterHumanLabel() + "</b>: " + msg.generateWarningString());
   }
+  else if (msg.getType() == PipelineMessage::StatusMessage)
+  {
+    // msg.generateStatusString();
+  }
 }
 
 // -----------------------------------------------------------------------------

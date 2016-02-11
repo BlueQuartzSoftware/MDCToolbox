@@ -213,7 +213,8 @@ bool D3DProcessor::executePipeline(const QString &pipelineFilePath, const QStrin
     return false;
   }
 
-  QSharedPointer<D3DProcessorObserver> obs = QSharedPointer<D3DProcessorObserver>(new D3DProcessorObserver()); // Create an Observer to report errors/progress from the executing pipeline
+  // Create an Observer to report errors/warnings from the executing pipeline
+  QSharedPointer<D3DProcessorObserver> obs = QSharedPointer<D3DProcessorObserver>(new D3DProcessorObserver());
   pipeline->addMessageReceiver(obs.data());
 
   // Preflight the pipeline

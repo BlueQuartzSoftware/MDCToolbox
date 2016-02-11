@@ -79,7 +79,7 @@ void D3DProcessingPage::setupGui()
   tableView->setModel(model);
   tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::Conditions, QHeaderView::ResizeToContents);
   tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::RawImagePath, QHeaderView::ResizeToContents);
-  tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::D3DOutputPath, QHeaderView::Stretch);
+  tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::D3DOutputPath, QHeaderView::ResizeToContents);
 
   connect(model->getLoadingGif(), SIGNAL(frameChanged(int)), this, SLOT(modelLoadingGif_frameChanged(int)));
 

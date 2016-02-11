@@ -76,7 +76,7 @@ void SendToExtToolPage::setupGui()
   tableView->setModel(model);
   tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::Conditions, QHeaderView::ResizeToContents);
   tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::RawImagePath, QHeaderView::ResizeToContents);
-  tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::D3DOutputPath, QHeaderView::Stretch);
+  tableView->horizontalHeader()->setSectionResizeMode(PreviewTableModel::D3DOutputPath, QHeaderView::ResizeToContents);
 
   registerField(MDCToolSpace::FieldNames::ExtToolLocationFilePath, extToolLocationEdit);
 }
