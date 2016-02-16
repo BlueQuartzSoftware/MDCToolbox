@@ -45,19 +45,44 @@ class D3DProcessorObserver : public QObject, public IObserver
     Q_OBJECT
 
     public:
+      enum PipelineMessageType
+      {
+        Error,
+        Warning,
+      };
+
+      enum PipelineState
+      {
+        Preflight,
+        Execution,
+        Unknown
+      };
+
+      struct ProcessorPipelineMessage
+      {
+        QString fileName;
+        QString message;
+        int errorCode;
+        PipelineMessageType messageType;
+        PipelineState occurrence;
+      };
+
       D3DProcessorObserver();
       SIMPL_TYPE_MACRO_SUPER(D3DProcessorObserver, IObserver)
       virtual ~D3DProcessorObserver();
 
-      QStringList getErrorMessages();
-      QStringList getWarningMessages();
+      QList<ProcessorPipelineMessage> getProcessorPipelineMessages();
+
+      void setFileName(const QString &fileName);
+      void setPipelineState(PipelineState state);
 
     public slots:
       virtual void processPipelineMessage(const PipelineMessage& pm);
 
     private:
-      QStringList                                   m_ErrorMessages;
-      QStringList                                   m_WarningMessages;
+      QList<ProcessorPipelineMessage>                                   m_PipelineMessages;
+      QString                                                           m_FileName;
+      PipelineState                                                     m_PipelineState;
 
       D3DProcessorObserver(const D3DProcessorObserver&); // Copy Constructor Not Implemented
       void operator=(const D3DProcessorObserver&); // Operator '=' Not Implemented

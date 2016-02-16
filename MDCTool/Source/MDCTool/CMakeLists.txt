@@ -41,6 +41,7 @@ set(MDCTool_SRCS
   ${MDCTool_SOURCE_DIR}/MDCToolStyles.cpp
   ${MDCTool_SOURCE_DIR}/PreviewTableItem.cpp
   ${MDCTool_SOURCE_DIR}/PreviewTableModel.cpp
+  ${MDCTool_SOURCE_DIR}/ProcessingResultsDialog.cpp
   ${MDCTool_SOURCE_DIR}/QFSDropLineEdit.cpp
   ${MDCTool_SOURCE_DIR}/QFileCompleter.cpp
   ${MDCTool_SOURCE_DIR}/SendToExtToolPage.cpp
@@ -65,6 +66,7 @@ SET(MDCTool_MOC_HDRS
     ${MDCTool_SOURCE_DIR}/MDCTool.h
     ${MDCTool_SOURCE_DIR}/MDCToolStyles.h
     ${MDCTool_SOURCE_DIR}/PreviewTableModel.h
+    ${MDCTool_SOURCE_DIR}/ProcessingResultsDialog.h
     ${MDCTool_SOURCE_DIR}/QFSDropLineEdit.h
     ${MDCTool_SOURCE_DIR}/QFileCompleter.h
     ${MDCTool_SOURCE_DIR}/SendToExtToolPage.h
@@ -79,6 +81,7 @@ SET(MDCTool_UIS
   ${MDCTool_SOURCE_DIR}/UI_Files/GatherDataPage.ui
   ${MDCTool_SOURCE_DIR}/UI_Files/ImportFilesWidget.ui
   ${MDCTool_SOURCE_DIR}/UI_Files/InputDataPage.ui
+  ${MDCTool_SOURCE_DIR}/UI_Files/ProcessingResultsDialog.ui
   ${MDCTool_SOURCE_DIR}/UI_Files/SendToExtToolPage.ui
 )
 

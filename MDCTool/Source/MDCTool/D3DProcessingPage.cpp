@@ -245,18 +245,24 @@ bool D3DProcessingPage::isComplete() const
   }
 
   PreviewTableModel* model = PreviewTableModel::Instance();
+  bool hasNoErrorItem = false;
   for (int i = 0; i < model->rowCount(); i++)
   {
     PreviewTableItem::PipelineState state = model->getPipelineState(i);
-    if (state != PreviewTableItem::DoneNoError)
+    if (state == PreviewTableItem::DoneNoError)
     {
-      return false;
+      hasNoErrorItem = true;
     }
   }
 
-  executionStatus->clear();
-
-  return true;
+  if (hasNoErrorItem == true)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -271,6 +277,8 @@ void D3DProcessingPage::cleanupPage()
     model->setData(model->index(i, PreviewTableModel::D3DOutputPath), "", Qt::DisplayRole);
   }
 
+  executionStatus->clear();
+
   QWizardPage::cleanupPage();
 }
 
@@ -279,11 +287,5 @@ void D3DProcessingPage::cleanupPage()
 // -----------------------------------------------------------------------------
 bool D3DProcessingPage::validatePage()
 {
-  PreviewTableModel* model = PreviewTableModel::Instance();
-  for (int i = 0; i < model->rowCount(); i++)
-  {
-    model->setPipelineState(i, PreviewTableItem::NotRunning);
-  }
-
   return true;
 }

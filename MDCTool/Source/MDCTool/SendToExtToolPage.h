@@ -67,6 +67,11 @@ class SendToExtToolPage : public QWizardPage, private Ui::SendToExtToolPage
     bool isComplete() const;
 
     /**
+    * @brief Cleans up the page when the user presses the "Back" button
+    */
+    void cleanupPage();
+
+    /**
     * @brief Slot that is called after the user presses Next but before the next page shows
     */
     bool validatePage();

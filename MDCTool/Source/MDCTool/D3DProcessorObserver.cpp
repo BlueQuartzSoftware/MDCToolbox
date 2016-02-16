@@ -37,7 +37,9 @@
 //
 // -----------------------------------------------------------------------------
 D3DProcessorObserver::D3DProcessorObserver() :
-  IObserver()
+  IObserver(),
+  m_FileName(""),
+  m_PipelineState(Unknown)
 {
 
 }
@@ -59,11 +61,23 @@ void D3DProcessorObserver::processPipelineMessage(const PipelineMessage& pm)
 
   if(msg.getType() == PipelineMessage::Error)
   {
-    m_ErrorMessages.push_back("<b>" + msg.getFilterHumanLabel() + "</b>: " + msg.generateErrorString());
+    ProcessorPipelineMessage pipelineMsg;
+    pipelineMsg.errorCode = msg.getCode();
+    pipelineMsg.fileName = m_FileName;
+    pipelineMsg.message = msg.getFilterHumanLabel() + ": " + msg.generateErrorString();
+    pipelineMsg.messageType = PipelineMessageType::Error;
+    pipelineMsg.occurrence = m_PipelineState;
+    m_PipelineMessages.push_back(pipelineMsg);
   }
   else if(msg.getType() == PipelineMessage::Warning)
   {
-    m_WarningMessages.push_back("<b>" + msg.getFilterHumanLabel() + "</b>: " + msg.generateWarningString());
+    ProcessorPipelineMessage pipelineMsg;
+    pipelineMsg.errorCode = msg.getCode();
+    pipelineMsg.fileName = m_FileName;
+    pipelineMsg.message = msg.getFilterHumanLabel() + ": " + msg.generateWarningString();
+    pipelineMsg.messageType = PipelineMessageType::Warning;
+    pipelineMsg.occurrence = m_PipelineState;
+    m_PipelineMessages.push_back(pipelineMsg);
   }
   else if (msg.getType() == PipelineMessage::StatusMessage)
   {
@@ -74,15 +88,23 @@ void D3DProcessorObserver::processPipelineMessage(const PipelineMessage& pm)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QStringList D3DProcessorObserver::getErrorMessages()
+QList<D3DProcessorObserver::ProcessorPipelineMessage> D3DProcessorObserver::getProcessorPipelineMessages()
 {
-  return m_ErrorMessages;
+  return m_PipelineMessages;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QStringList D3DProcessorObserver::getWarningMessages()
+void D3DProcessorObserver::setFileName(const QString &fileName)
 {
-  return m_WarningMessages;
+  m_FileName = fileName;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void D3DProcessorObserver::setPipelineState(PipelineState state)
+{
+  m_PipelineState = state;
 }

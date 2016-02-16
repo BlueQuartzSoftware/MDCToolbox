@@ -100,6 +100,37 @@ QVariant PreviewTableModel::data(const QModelIndex& index, int role) const
     PreviewTableItem* item = getItem(actualIndex);
     return item->data(index.column());
   }
+  else if (role == Qt::BackgroundRole)
+  {
+    PreviewTableItem::PipelineState state = getItem(index)->getPipelineState();
+    if (state == PreviewTableItem::DoneNoError)
+    {
+      return QColor(189, 255, 189);
+    }
+    else if (state == PreviewTableItem::DoneError)
+    {
+      return QColor(255, 191, 193);
+    }
+    else
+    {
+      return QVariant();
+    }
+  }
+  else if (role == Qt::FontRole)
+  {
+    PreviewTableItem::PipelineState state = getItem(index)->getPipelineState();
+    if (state == PreviewTableItem::DoneError)
+    {
+      QFont font;
+      font.setStrikeOut(true);
+      
+      return font;
+    }
+    else
+    {
+      return QVariant();
+    }
+  }
   else if (role == Qt::TextAlignmentRole)
   {
     return Qt::AlignCenter;

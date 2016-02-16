@@ -33,70 +33,50 @@
 *
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-#ifndef PreviewTableItem_H
-#define PreviewTableItem_H
 
-#include <QtCore/QVariant>
-#include <QtCore/QVector>
+#ifndef _ProcessingResultsDialog_H_
+#define _ProcessingResultsDialog_H_
 
-#include <QtGui/QColor>
-#include <QtGui/QFont>
+#include <QtWidgets/QDialog>
 
-class PreviewTableItem
+#include "D3DProcessorObserver.h"
+
+#include "ui_ProcessingResultsDialog.h"
+
+class ProcessingResultsDialog : public QDialog, private Ui::ProcessingResultsDialog
 {
-public:
-  PreviewTableItem(const QVector<QVariant>& data);
-  virtual ~PreviewTableItem();
+  Q_OBJECT
 
-  enum PipelineState
-  {
-    NotRunning,
-    InProgress,
-    DoneError,
-    DoneNoError
-  };
+  public:
+    /**
+    * @brief Constructor
+    * @param parameter The FilterParameter object that this widget represents
+    * @param filter The instance of the filter that this parameter is a part of
+    * @param parent The parent QWidget for this Widget
+    */
+    ProcessingResultsDialog(QList<D3DProcessorObserver::ProcessorPipelineMessage> messages, QWidget* parent = NULL);
 
-  bool insertColumns(int position, int columns);
-  bool removeColumns(int position, int columns);
+    virtual ~ProcessingResultsDialog();
 
-  QVariant data(int column) const;
-  bool setData(int column, const QVariant& value);
+    /**
+     * @brief Initializes some of the GUI elements with selections or other GUI related items
+     */
+    virtual void setupGui(QList<D3DProcessorObserver::ProcessorPipelineMessage> messages);
 
-  PipelineState getPipelineState();
-  void setPipelineState(PipelineState state);
+  protected slots:
+    void on_okBtn_pressed();
 
-  int getFileIndex();
-  void setFileIndex(int num);
+  private:
+    enum ColumnIndices
+    {
+      FileName,
+      Message,
+      Code,
+      Occurrence
+    };
 
-  int getPaddingDigits();
-  void setPaddingDigits(int num);
-
-  QString getInputDirectory();
-  void setInputDirectory(QString str);
-
-  QString getFilePrefix();
-  void setFilePrefix(QString str);
-
-  QString getFileSuffix();
-  void setFileSuffix(QString str);
-
-  QString getFileExtension();
-  void setFileExtension(QString str);
-
-private:
-  QVector<QVariant>                                             m_ItemData;
-  PipelineState                                                 m_PipelineState;
-
-  // ImportFilesWidget Information
-  int                                                           m_FileIndex;
-  int                                                           m_PaddingDigits;
-  QString                                                       m_InputDir;
-  QString                                                       m_FilePrefix;
-  QString                                                       m_FileSuffix;
-  QString                                                       m_FileExtension;
-
-  PreviewTableItem(const PreviewTableItem&);    // Copy Constructor Not Implemented
-  void operator=(const PreviewTableItem&);  // Operator '=' Not Implemented
+    ProcessingResultsDialog(const ProcessingResultsDialog&); // Copy Constructor Not Implemented
+    void operator=(const ProcessingResultsDialog&); // Operator '=' Not Implemented
 };
 
-#endif // PreviewTableItem_H
+#endif /* ProcessingResultsDialog_H_ */
